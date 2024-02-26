@@ -3,6 +3,7 @@ import model.Product;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
@@ -44,11 +45,22 @@ public class Main {
 
                     System.out.print("Are you sure to Backup [Y/N]: ");
                     String ch = scanner.nextLine();
+                    try {
+                        if (ch.equalsIgnoreCase("y")) {
+                            Duration backUpDuration = crud.timeOperation(() -> {
 
-                    if (ch.equalsIgnoreCase("y")) {
-                        crud.backUpData(sourceFilePaths,backupFilePath);
+                                crud.backupProductListToFile(sourceFilePaths,backupFilePath);
+
+                            });
+                            System.out.println("Time taken to backup the data to file: " + backUpDuration.toMillis() + " milliseconds");
+                        }
+
+                    }catch (Exception e){
+                        System.out.println(e.getMessage());
                     }
+
                 }
+                case "t"->crud.restoreData("product.bak","backup");
 //
 
             }

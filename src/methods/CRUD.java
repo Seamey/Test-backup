@@ -17,5 +17,10 @@ public interface CRUD {
     int setNewRow();
     void setPageSize(Scanner scanner);
     int savePageSize(int pageSize);
+//    void backUpData(String sourceFilePath, String backupFilePath);
+
+    void backupProductListToFile(String sourceFilePath, String backupFilePath);
+
+    void restoreData(String sourceFilePath, String backupFilePath);
 
 }

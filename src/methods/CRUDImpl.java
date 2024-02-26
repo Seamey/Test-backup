@@ -1,6 +1,5 @@
 package methods;
 
-import com.sun.security.jgss.GSSUtil;
 import model.Product;
 import org.nocrala.tools.texttablefmt.BorderStyle;
 import org.nocrala.tools.texttablefmt.CellStyle;
@@ -8,9 +7,8 @@ import org.nocrala.tools.texttablefmt.ShownBorders;
 import org.nocrala.tools.texttablefmt.Table;
 
 import java.io.*;
-import java.nio.channels.FileChannel;
 import java.nio.file.*;
-import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -296,23 +294,85 @@ public class CRUDImpl implements CRUD {
         return pageSize;
 
     }
-    public void backUpData(String sourceFilePath, String backupFilePath) {
-        try {
-            Path sourcePath = Path.of(sourceFilePath);
-            Path backupPath = Path.of(backupFilePath);
-            if (Files.exists(sourcePath)) {
-                // Create the backup directory if it doesn't exist
-                Files.createDirectories(backupPath.getParent());
-                // Copy the file to the backup location
-                Files.copy(sourcePath, backupPath, StandardCopyOption.REPLACE_EXISTING);
-                System.out.println("Backup created successfully.");
-            } else {
-                System.out.println("Source file does not exist.");
+    @Override
+    public void backupProductListToFile(String sourceFilePath, String backupFilePath) {
+        Thread backupThread = new Thread(() -> {
+            try {
+                Path sourcePath = Paths.get(sourceFilePath);
+                Path backupPath = Paths.get(backupFilePath);
+                if (Files.exists(sourcePath)) {
+                    // Create the backup directory if it doesn't exist
+                    Files.createDirectories(backupPath.getParent());
+                    // Copy the file to the backup location
+                    Files.copy(sourcePath, backupPath, StandardCopyOption.REPLACE_EXISTING);
+                } else {
+                    System.out.println("Source file does not exist.");
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                System.out.println("countDown is working now ");
             }
-        } catch (IOException e) {
+            System.out.println("Backup is Complete! ");
+        });
+        backupThread.start();
+        try {
+            backupThread.join();
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
     }
+    public static Duration timeOperation(Runnable operation) {
+        long startTime = System.nanoTime();
+        operation.run();
+        long endTime = System.nanoTime();
+        return Duration.ofNanos(endTime - startTime);
+    }
+
+
+
+//    test by me
+//    public void backUpData(String sourceFilePath, String backupFilePath) {
+//        try {
+//            Path sourcePath = Path.of(sourceFilePath);
+//            Path backupPath = Path.of(backupFilePath);
+//            if (Files.exists(sourcePath)) {
+//                // Create the backup directory if it doesn't exist
+//                Files.createDirectories(backupPath.getParent());
+//                // Copy the file to the backup location
+//                Files.copy(sourcePath, backupPath, StandardCopyOption.REPLACE_EXISTING);
+//                System.out.println("Backup created successfully.");
+//            } else {
+//                System.out.println("Source file does not exist.");
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
+
+    @Override
+    public void restoreData(String sourceFilePath, String backupFilePath) {
+        String folderPath = "backup"; // Replace with the actual folder path
+
+        try {
+//            listAllFilesInFolder(folderPath);
+             File file = new File(folderPath);
+             File [] files = file.listFiles();
+                for(int i=0; i<files.length; i++){
+
+                     System.out.println((i+1)+"." + files[i].getName());
+                }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.out.print("Choose file to restore: ");
+        int op = scanner.nextInt();
+
+    }
+
+
 
 }
 
