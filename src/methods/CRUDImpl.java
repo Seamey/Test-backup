@@ -330,49 +330,57 @@ public class CRUDImpl implements CRUD {
         return Duration.ofNanos(endTime - startTime);
     }
 
-
-
-//    test by me
-//    public void backUpData(String sourceFilePath, String backupFilePath) {
-//        try {
-//            Path sourcePath = Path.of(sourceFilePath);
-//            Path backupPath = Path.of(backupFilePath);
-//            if (Files.exists(sourcePath)) {
-//                // Create the backup directory if it doesn't exist
-//                Files.createDirectories(backupPath.getParent());
-//                // Copy the file to the backup location
-//                Files.copy(sourcePath, backupPath, StandardCopyOption.REPLACE_EXISTING);
-//                System.out.println("Backup created successfully.");
-//            } else {
-//                System.out.println("Source file does not exist.");
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
-
+// list file backup
     @Override
-    public void restoreData(String sourceFilePath, String backupFilePath) {
-        String folderPath = "backup"; // Replace with the actual folder path
-
+    public void restoreData(String sourceFilePath, String backupDirectory, int fileNumber) {
         try {
-//            listAllFilesInFolder(folderPath);
-             File file = new File(folderPath);
-             File [] files = file.listFiles();
-                for(int i=0; i<files.length; i++){
+            File[] backupFiles = getBackupFiles(backupDirectory);
 
-                     System.out.println((i+1)+"." + files[i].getName());
-                }
-
-        } catch (Exception e) {
+            if (fileNumber >= 1 && fileNumber <= backupFiles.length) {
+                File selectedFile = backupFiles[fileNumber - 1];
+                String backupFileName = selectedFile.getName();
+                String directory="restoredfile/";
+                String restoredFilePath = sourceFilePath.replaceFirst("[.][^.]+$", "_restored" + backupFileName.substring(backupFileName.lastIndexOf(".")));
+                String fullPath= directory+restoredFilePath;
+                Files.copy(selectedFile.toPath(), Path.of(fullPath), StandardCopyOption.REPLACE_EXISTING);
+                System.out.println("Data restored successfully to: " + restoredFilePath);
+            } else {
+                System.out.println("Invalid file number.");
+            }
+        } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.print("Choose file to restore: ");
-        int op = scanner.nextInt();
-
     }
 
 
+    @Override
+     public File[] getBackupFiles(String backupDirectory) {
+        // Implement logic to get backup files from the specified directory
+        File backupDir = new File(backupDirectory);
+        return backupDir.listFiles();
+    }
 
+    @Override
+    public void listBackupFiles(String backupDirectory) {
+        File backupDir = new File(backupDirectory);
+        File[] backupFiles = backupDir.listFiles();
+
+        if (backupFiles != null && backupFiles.length > 0) {
+            Table table = new Table(1, BorderStyle.UNICODE_DOUBLE_BOX_WIDE, ShownBorders.SURROUND);
+            table.addCell("Backup Files:");
+
+            for (int i = 0; i < backupFiles.length; i++) {
+                table.addCell((i + 1) + ". " + backupFiles[i].getName());
+            }
+
+            System.out.println(table.render());
+        } else {
+            System.out.println("No backup files found.");
+        }
+    }
 }
+
+
+
+
 

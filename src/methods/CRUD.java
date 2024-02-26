@@ -2,6 +2,7 @@ package methods;
 
 import model.Product;
 
+import java.io.File;
 import java.util.List;
 import java.util.Scanner;
 
@@ -17,10 +18,11 @@ public interface CRUD {
     int setNewRow();
     void setPageSize(Scanner scanner);
     int savePageSize(int pageSize);
-//    void backUpData(String sourceFilePath, String backupFilePath);
 
     void backupProductListToFile(String sourceFilePath, String backupFilePath);
 
-    void restoreData(String sourceFilePath, String backupFilePath);
+    void restoreData(String sourceFilePath, String backupDirectory, int fileName);
+    File[] getBackupFiles(String backupDirectory);
+    void listBackupFiles(String backupDirectory);
 
 }

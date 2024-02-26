@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
+
+
 public class Main {
     static CRUDImpl crud = new CRUDImpl();
     static Scanner scanner = new Scanner(System.in);
@@ -18,9 +20,9 @@ public class Main {
             int pageSize= crud.setNewRow();
             List<Product> productList = new ArrayList<>();
             System.out.println("""
-                #######################################################################
-                (Dis)play (Ra)ndom (C)reate (R)ead (D)elete (U)pdate (S)earch Bac(k)up
-                #######################################################################""");
+                ##################################################################################
+                (Dis)play (Ra)ndom (C)reate (R)ead (D)elete (U)pdate (S)earch Bac(k)up Res(t)ore
+                ##################################################################################""");
             System.out.print("Please choose options : ");
             String op = scanner.nextLine();
             switch (op){
@@ -60,9 +62,18 @@ public class Main {
                     }
 
                 }
-                case "t"->crud.restoreData("product.bak","backup");
-//
+                case "t" -> {
+                    String backupDirectory = "backup/";
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
+                    String timestamp = dateFormat.format(new Date());
+                    String backupFileName = "backupfile_" + timestamp + ".bak";
 
+                    // restore code
+                    crud.listBackupFiles(backupDirectory);
+                    System.out.print("Enter the name of the backup file to restore: ");
+                    int selectedFileName = Integer.parseInt(scanner.nextLine());
+                    crud.restoreData("product.bak", backupDirectory, selectedFileName);
+                }
             }
         } while (true);
     }
